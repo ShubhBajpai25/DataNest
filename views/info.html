@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+<head>
+    <title>PDMA Information Page</title>
+    <link href="/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    
+    <%- include('header.html') %>
+
+    <main>
+        <div class="container py-5 text-datanest">
+            <h3 class="my-4 text-center">PDMA Information Page</h3>
+
+            <br><br><div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">Routing Table</h2>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Endpoint</th>
+                                    <th>HTTP Method</th>
+                                    <th>Purpose</th>
+                                    <th>Query Parameters</th>
+                                    <th>Handler</th>
+                                    <th>Quick Access</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Home Page</td>
+                                    <td>/</td>
+                                    <td>GET</td>
+                                    <td>DataNest's Home Page!</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                    <td><a class="btn btn-primary btn-sm" href="/33310440/Shubh/">Home Page</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Log In</td>
+                                    <td>/33310440/Shubh/users/login</td>
+                                    <td>POST</td>
+                                    <td>User Login Page</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                    <td><a class="btn btn-primary btn-sm" href="/33310440/Shubh/users/login">Log-In Page</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Sign Up</td>
+                                    <td>/33310440/Shubh/users/signup</td>
+                                    <td>POST</td>
+                                    <td>User Signup Page</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                    <td><a class="btn btn-primary btn-sm" href="/33310440/Shubh/">Sign-Up Page</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Add Drivers</td>
+                                    <td>/33310440/Shubh/add-driver</td>
+                                    <td>POST</td>
+                                    <td>Add new drivers for package delivery.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                    <td><a class="btn btn-primary btn-sm" href="/33310440/Shubh/add-driver">Add a new driver!</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Delete Drivers</td>
+                                    <td>/33310440/Shubh/remove-driver</td>
+                                    <td>GET</td>
+                                    <td>Remove drivers from system.</td>
+                                    <td>
+                                        ?id=driverId (ID: Randomly Generated ID)<br>
+                                        (ex: ?id=D27-33-XUW)
+                                    </td>
+                                    <td>deleteDriver()</td>
+                                    <td><a class="btn btn-primary btn-sm" href="/33310440/Shubh/delete-driver">Remove a driver</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Add Packages</td>
+                                    <td>/33310440/Shubh/add-package</td>
+                                    <td>POST</td>
+                                    <td>Add new packages to deliver.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                    <td><a class="btn btn-primary btn-sm" href="/33310440/Shubh/add-package">Add a new package!</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Delete Packages</td>
+                                    <td>/33310440/Shubh/remove-package</td>
+                                    <td>GET</td>
+                                    <td>Remove any packages not needed.</td>
+                                    <td>
+                                        ?id=package_id (ID: Randomly Generated ID)<br>
+                                        (ex: ?id=D27-33-XUW)
+                                    </td>
+                                    <td>deletePackage()</td>
+                                    <td><a class="btn btn-primary btn-sm" href="/33310440/Shubh/delete-package">Remove a package</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Driver's List</td>
+                                    <td>/33310440/Shubh/driver-list</td>
+                                    <td>GET</td>
+                                    <td>Display all of the drivers currently registered.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                    <td><a class="btn btn-primary btn-sm" href="/33310440/Shubh/driver-list">View all drivers!</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Package List</td>
+                                    <td>/33310440/Shubh/package-list</td>
+                                    <td>GET</td>
+                                    <td>Display all of the packages currently registered.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                    <td><a class="btn btn-primary btn-sm" href="/33310440/Shubh/package-list">View all packages!</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Driver's Department List</td>
+                                    <td>/33310440/Shubh/driver-dep-list</td>
+                                    <td>GET</td>
+                                    <td>Get all drivers based on their department of delivery.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                    <td><a class="btn btn-primary btn-sm" href="/33310440/Shubh/driver-dep-list">View department drivers!</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CRUD Operations</td>
+                                    <td>/33310440/Shubh/operations</td>
+                                    <td>GET</td>
+                                    <td>Get all of the operations being conducted on the website.</td>
+                                    <td>None</td>
+                                    <td>getAllCounters()</td>
+                                    <td><a class="btn btn-primary btn-sm" href="/33310440/Shubh/operations">View operations!</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <br><br><div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">API Routing Table</h2>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Endpoint</th>
+                                    <th>HTTP Method</th>
+                                    <th>Purpose</th>
+                                    <th>Query Parameters</th>
+                                    <th>Handler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Add Driver</td>
+                                    <td>/api/v1/driver/add</td>
+                                    <td>POST</td>
+                                    <td>Add a new driver.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                </tr>
+                                <tr>
+                                    <td>Delete Driver</td>
+                                    <td>/api/v1/driver/delete</td>
+                                    <td>DELETE</td>
+                                    <td>Delete a driver by ID.</td>
+                                    <td>
+                                        ?id=driverId (MongoDB ID)<br>
+                                        (ex: ?id="66e2709eb1c24d14799bbcde")
+                                    </td>
+                                    <td>None</td>
+                                </tr>
+                                <tr>
+                                    <td>Driver List</td>
+                                    <td>/api/v1/driver/</td>
+                                    <td>GET</td>
+                                    <td>Get a list of all drivers.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                </tr>
+                                <tr>
+                                    <td>Update Driver</td>
+                                    <td>/api/v1/driver/update</td>
+                                    <td>PUT</td>
+                                    <td>Update driver's department or license.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                </tr>
+                                <tr>
+                                    <td>Add Package</td>
+                                    <td>/api/v1/package/add</td>
+                                    <td>POST</td>
+                                    <td>Add a new package.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                </tr>
+                                <tr>
+                                    <td>Delete Package</td>
+                                    <td>/api/v1/package/delete</td>
+                                    <td>DELETE</td>
+                                    <td>Delete a package by ID.</td>
+                                    <td>?id=packageId (MongoDB ID) <br>
+                                        (ex: ?id="66e2709eb1c24d14799bbcde")
+                                    </td>
+                                    <td>None</td>
+                                </tr>
+                                <tr>
+                                    <td>Package List</td>
+                                    <td>/api/v1/package/</td>
+                                    <td>GET</td>
+                                    <td>Get a list of all packages.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                </tr>
+                                <tr>
+                                    <td>Update Package</td>
+                                    <td>/api/v1/package/update</td>
+                                    <td>PUT</td>
+                                    <td>Update package destination.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                </tr>
+                                <tr>
+                                    <td>Login</td>
+                                    <td>/api/v1/login</td>
+                                    <td>POST</td>
+                                    <td>Log in a user.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                </tr>
+                                <tr>
+                                    <td>Signup</td>
+                                    <td>/api/v1/signup</td>
+                                    <td>POST</td>
+                                    <td>Sign up a new user.</td>
+                                    <td>None</td>
+                                    <td>None</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('footer.html') %>
+
+</body>
+</html>

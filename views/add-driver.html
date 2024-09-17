@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+<head>
+    <title>Add Driver</title>
+    <link href="/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    
+    <%- include('header.html') %>
+
+    <main>
+        <div class="container py-5 text-datanest">
+
+            <h3 class="my-4 text-center">Add New Driver Form</h3>
+
+            <br><br><div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <form action="/33310440/Shubh/add-driver" method="POST">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Name:</label>
+                                    <input type="text" name="name" id="name" class="form-control" required/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="department" class="form-label">Driver Department:</label>
+                                    <select name="department" id="department" class="form-select" required>
+                                        <option value="">Select a department for the driver</option>
+                                        <option value="Food">Food</option>
+                                        <option value="Furniture">Furniture</option>
+                                        <option value="Electronic">Electronic</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="license" class="form-label">Driver License:</label>
+                                    <input type="text" name="license" id="license" class="form-control" required/>
+                                </div>
+
+                                <div class="mb-3 form-check form-switch">
+                                    <input type="checkbox" name="isActive" id="isActive" value="true" class="form-check-input" role="switch"/>
+                                    <label for="isActive" class="form-check-label">Is the driver active?</label>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Add driver!</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('footer.html') %>
+</body>
+</html>

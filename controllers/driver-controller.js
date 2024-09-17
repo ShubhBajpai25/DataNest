@@ -1,0 +1,249 @@
+const Driver = require("../models/Driver");
+const Package = require("../models/Package");
+const { updateCounter } = require('../firebase-crud');
+const admin = require('firebase-admin');
+const { logIn } = require("./package-controller");
+const db_login = admin.firestore()
+
+let userLoggedIn = false;
+
+module.exports = {
+    /**
+     * Adds a new driver to the database.
+     * 
+     * @param {Object} req - The request object containing the driver data in the body.
+     * @param {Object} res - The response object used to send the response.
+     * @returns {Promise<void>} - A promise that resolves with the status of the driver creation.
+     */
+    addDriver: async function (req, res) {
+        try {
+            let driverData = req.body;
+    
+            const driver = new Driver({
+                driverName: driverData.driverName,
+                driverDepartment: driverData.driverDepartment,
+                driverLicense: driverData.driverLicense,
+                driverIsActive: driverData.driverIsActive
+            });
+    
+            await driver.save();
+
+            // Update the counter
+            await updateCounter('insert');
+    
+            res.status(200).json({
+                id: driver._id,
+                driverId: driver.driverId
+            });
+        } catch (error) {
+            res.status(500).json({ message: "An error occurred while adding the driver.", error: error.message });
+        }
+    },
+
+    /**
+     * Retrieves the list of all drivers from the database.
+     * 
+     * @param {Object} req - The request object.
+     * @param {Object} res - The response object used to send the list of drivers.
+     * @returns {Promise<void>} - A promise that resolves with the list of drivers.
+     */
+    driverList: async function (req, res) {
+        try {
+            const drivers = await Driver.find({}).populate('assigned_packages');
+
+            if (drivers.length === 0) {
+                return res.status(404).json({ message: "No drivers found" });
+            }
+
+            res.status(200).json(drivers);
+
+            // Update the counter
+            await updateCounter('retrieve');
+
+        } catch (error) {
+            res.status(500).json({ message: "Failed to retrieve drivers", error: error.message });
+        }
+    },
+
+    /**
+     * Deletes a driver by their ID and removes associated packages.
+     * 
+     * @param {Object} req - The request object containing the driver ID in the query string.
+     * @param {Object} res - The response object used to send the deletion status.
+     * @returns {Promise<void>} - A promise that resolves with the deletion result.
+     */
+    deleteDriver: async function (req, res) {
+        try {
+            const driverId = req.query.id;
+            const driver = await Driver.findById(driverId);
+            if (!driver) {
+                return res.status(404).json({ message: "Driver not found" });
+            }
+            
+            // Delete all packages assigned to the driver
+            const packageDeletion = await Package.deleteMany({ packageAssignedDriver: driver._id });
+            
+            // Update the counter
+            await updateCounter('delete');
+            
+            // Delete the driver
+            const deleteResult = await Driver.deleteOne({ _id: driverId });
+            
+            if (deleteResult.deletedCount > 0) {
+                res.status(200).json({
+                    acknowledged: true,
+                    deletedCount: deleteResult.deletedCount + packageDeletion.deletedCount
+                });
+            } else {
+                res.status(404).json({ message: "Driver not found" });
+            }
+        } catch (error) {
+            res.status(500).json({ message: "Failed to delete driver", error: error.message });
+        }
+    },
+
+    /**
+     * Updates a driver's department or license information.
+     * 
+     * @param {Object} req - The request object containing the driver ID and update details.
+     * @param {Object} res - The response object used to send the update status.
+     * @returns {Promise<void>} - A promise that resolves with the updated driver information.
+     */
+    driverUpdate: async function (req, res) {
+        try {
+            const { driverId, driverDepartment, driverLicense } = req.body;
+    
+            if (!driverId) {
+                return res.status(400).json({ status: "Driver ID is required" });
+            }
+    
+            if (!driverDepartment && !driverLicense) {
+                return res.status(400).json({ status: "Either driver department or license must be provided for update" });
+            }
+    
+            const updateFields = {};
+            if (driverDepartment) updateFields.driverDepartment = driverDepartment;
+            if (driverLicense) updateFields.driverLicense = driverLicense;
+    
+            const updatedDriver = await Driver.findByIdAndUpdate(
+                driverId,
+                updateFields,
+                { new: true }
+            );
+    
+            if (!updatedDriver) {
+                return res.status(404).json({ status: "Driver not found" });
+            }
+
+            // Update the counter
+            await updateCounter('update');
+    
+            res.status(200).json({ status: "Driver updated successfully", driver: updatedDriver });
+        } catch (error) {
+            res.status(500).json({ message: "Failed to update driver", error: error.message });
+        }
+    },
+
+    /**
+     * Logs in a user by checking their username and password.
+     * 
+     * @param {Object} req - The request object containing the username and password in the body.
+     * @param {Object} res - The response object used to send the login status.
+     * @returns {Promise<void>} - A promise that resolves with the login status.
+     */
+    logIn: async function (req, res) {
+        const { username, password } = req.body;
+        try {
+            const findUser = await db_login.collection('users')
+                .where('username', '==', username)
+                .limit(1)
+                .get();
+            
+            if (findUser.empty) {
+                return res.status(400).json({ status: "Error. The username/password is invalid." });
+            }
+            
+            const user = findUser.docs[0].data();
+            
+            // Check if the password matches
+            if (user.password !== password) {
+                return res.status(400).json({ status: "Error. The username/password is invalid." });
+            }
+
+            userLoggedIn = true;
+
+            res.status(200).json({ 
+                status: "Login successfully",
+            });
+
+        } catch (error) {
+            console.error("Error logging in:", error);
+            return res.redirect(`${stuID_PORT}` + 'invalid');
+        }
+    },
+
+    /**
+     * Signs up a new user by validating and saving their information.
+     * 
+     * @param {Object} req - The request object containing user information in the body.
+     * @param {Object} res - The response object used to send the signup status.
+     * @returns {Promise<void>} - A promise that resolves with the signup status.
+     */
+    signUp: async function (req, res) {
+        const { username, email, password, 'confirm-password': confirmPassword } = req.body;
+
+        if (!username || !email || !password || !confirmPassword) {
+            return res.status(400).json({ status: "Error. All fields are supposed to be filled." });
+        }
+
+        if (username.length <= 6 || !/^[a-zA-Z0-9]+$/.test(username)) {
+            return res.status(400).json({ status: "Error. Username must be alphanumeric and at least 6 characters." });
+        }
+
+        if (password.length < 5 || password.length > 10) {
+            return res.status(400).json({ status: "Error. The password length is between 5 and 10 characters." });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({ status: "Error. Passwords must match." });
+        }
+
+        try {
+            const existingUser = await db_login.collection('users')
+                .where('email', '==', email)
+                .get();
+            if (!existingUser.empty) {
+                return res.status(400).json({ status: "Error. User already exists." });
+            }
+
+            await db_login.collection('users').doc().set({
+                username: username,
+                email: email,
+                password: password
+            });
+
+            res.status(200).json({ 
+                status: "Signup successfully",
+            });
+
+        } catch (error) {
+            return res.status(400).json({ status: "Error with signup." });
+        }  
+    },
+
+    /**
+     * Middleware to authenticate a user before proceeding to the next route.
+     * 
+     * @param {Object} req - The request object.
+     * @param {Object} res - The response object.
+     * @param {Function} next - The next middleware function.
+     * @returns {Promise<void>} - A promise that resolves if the user is authenticated.
+     */
+    userAuthenticate: async function (req, res, next) {
+        if (userLoggedIn) {
+            return next();
+        } else {
+            return res.status(401).json({ status: "Error. Unauthorized." });
+        }
+    }
+};

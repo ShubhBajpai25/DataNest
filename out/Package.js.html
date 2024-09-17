@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Package.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Package.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @class
+ * Represents a package in the DataNest system.
+ * 
+ */
+class Package {
+    /**
+     * @private {string} #packageId - The unique identifier for the package, generated upon instantiation.
+     * @private {string} #packageTitle - The title of the package.
+     * @private {number} #packageWeight - The weight of the package.
+     * @private {string} #packageDestination - The destination address of the package.
+     * @private {string} #description - A brief description of the package contents.
+     * @private {string} #createdAt - The date and time when the package was created.
+     * @private {boolean} #isAllocated - Indicates whether the package is allocated to a driver.
+     * @private {Driver} #driver - The driver assigned to the package, if any.
+     */
+    #packageId;
+    #packageTitle;
+    #packageWeight;
+    #packageDestination;
+    #description;
+    #createdAt;
+    #isAllocated;
+    #driver;
+
+    /**
+     * Creates an instance of Package.
+     * @param {string} packageTitle - The title of the package.
+     * @param {number} packageWeight - The weight of the package.
+     * @param {string} packageDestination - The destination address of the package.
+     * @param {string} description - A brief description of the package contents.
+     * @param {boolean} isAllocated - Indicates whether the package is allocated to a driver.
+     * @param {Driver} driver - The driver assigned to the package, if any.
+     */
+    constructor(packageTitle, packageWeight, packageDestination, description, isAllocated, driver) {
+        this.#packageId = this.generatePackageId();
+        this.#packageTitle = packageTitle;
+        this.#packageWeight = packageWeight;
+        this.#packageDestination = packageDestination;
+        this.#description = description;
+        this.#createdAt = new Date().toLocaleString();
+        this.#isAllocated = isAllocated;
+        this.#driver = driver;
+    }
+
+    /**
+     * Retrieves the unique identifier for the package.
+     * @returns {string} The package's unique identifier.
+     */
+    get packageId() {
+        return this.#packageId;
+    }
+
+    /**
+     * Retrieves the title of the package.
+     * @returns {string} The package's title.
+     */
+    get packageTitle() {
+        return this.#packageTitle;
+    }
+
+    /**
+     * Retrieves the weight of the package.
+     * @returns {number} The package's weight.
+     */
+    get packageWeight() {
+        return this.#packageWeight;
+    }
+
+    /**
+     * Retrieves the destination address of the package.
+     * @returns {string} The package's destination address.
+     */
+    get packageDestination() {
+        return this.#packageDestination;
+    }
+
+    /**
+     * Retrieves the description of the package contents.
+     * @returns {string} The package's description.
+     */
+    get description() {
+        return this.#description;
+    }
+
+    /**
+     * Retrieves the creation date and time of the package.
+     * @returns {string} The package's creation date and time.
+     */
+    get createdAt() {
+        return this.#createdAt;
+    }
+
+    /**
+     * Indicates whether the package is allocated to a driver.
+     * @returns {boolean} True if the package is allocated, otherwise false.
+     */
+    get isAllocated() {
+        return this.#isAllocated;
+    }
+
+    /**
+     * Retrieves the driver assigned to the package.
+     * @returns {Driver} The driver assigned to the package.
+     */
+    get driver() {
+        return this.#driver;
+    }
+
+    /**
+     * Generates a unique identifier for the package.
+     * The format is "P[twoRandomLetters]-SB-[randomDigits]".
+     * @returns {string} A unique identifier for the package.
+     * @private
+     */
+    generatePackageId() {
+        let randomDigits = Math.floor(Math.random() * 1000);
+        let stuInitials = "SB";
+        let twoRandLetters = this.generateRandomLetters();
+        return "P" + twoRandLetters + "-" + stuInitials + "-" + randomDigits;   
+    }
+
+    /**
+     * Generates two random uppercase letters.
+     * @returns {string} A string containing two random uppercase letters.
+     * @private
+     */
+    generateRandomLetters() {
+        let letters = "";
+        for (let i = 0; i &lt; 2; i++){
+            letters += String.fromCharCode(Math.floor(Math.random() * 26) + 65);
+        }
+        return letters;
+    }
+}
+
+module.exports = Package;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Package.html">Package</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Fri Aug 23 2024 23:29:59 GMT+1000 (Australian Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

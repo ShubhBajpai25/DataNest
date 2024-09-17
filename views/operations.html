@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Operation Stats - DataNest</title>
+    <link href="/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <%- include('header.html') %>
+
+    <main class="container py-5">
+        <div class="jumbotron">
+            <h1 class="text-center mb-4">CRUD Operation Statistics</h1>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Operation</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Insert</td>
+                        <td><%= counters.insert %></td>
+                    </tr>
+                    <tr>
+                        <td>Retrieve</td>
+                        <td><%= counters.retrieve %></td>
+                    </tr>
+                    <tr>
+                        <td>Update</td>
+                        <td><%= counters.update %></td>
+                    </tr>
+                    <tr>
+                        <td>Delete</td>
+                        <td><%= counters.delete %></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <%- include('footer.html') %>
+</body>
+</html>

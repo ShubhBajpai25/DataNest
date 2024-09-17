@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: app.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: app.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Welcome to DataNest!
+ * @author Shubh Bajpai, Student ID: 33310440 &lt;sbaj0015@student.monash.edu>
+ */
+
+const express = require("express");
+const path = require("path");
+
+/**
+ * Shorthand for console.log
+ * @type {Function}
+ */
+const print = console.log;
+
+/**
+ * Port number for the server
+ * @type {number}
+ */
+const PORT_NUMBER = 8080;
+
+/**
+ * Base URL path for the application
+ * @type {string}
+ */
+const stuID_PORT = "/33310440/Shubh/";
+
+/**
+ * Array to store driver objects
+ * @type {Array&lt;Driver>}
+ */
+let driverDB = [];
+
+/**
+ * Array to store package objects
+ * @type {Array&lt;Package>}
+ */
+let packageDB = [];
+
+const Driver = require('./Driver');
+const Package = require('./Package');
+
+let app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("node_modules/bootstrap/dist/css"));
+app.use(express.static("public"));
+app.set('views', path.join(__dirname, "/views/"));
+
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
+
+/**
+ * Route handler for the root path (index.html)
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.get(`${stuID_PORT}`, function (req, res) {
+    res.render("index.html");
+});
+
+/**
+ * Route handler for the info page
+ * Renders the info.html file
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.get(`${stuID_PORT}` + "info", function (req, res) {
+    res.render("info.html");
+});
+
+/**
+ * Route handler for the add-driver page (GET METHOD)
+ * Renders the add-driver.html file
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.get(`${stuID_PORT}` + "add-driver", function (req, res) {
+    res.render("add-driver.html");
+});
+
+/**
+ * Route handler for adding a new driver (POST METHOD)
+ * Validates input and adds a new driver to the database
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.post(`${stuID_PORT}` + "add-driver", function (req, res) {
+    let {name, department, license, isActive} = req.body;
+
+    const min_words = 3;
+    const max_words = 20;
+
+    isActive = isActive === 'true';
+
+    if (!/^[a-zA-Z\s ]+$/.test(name)) {
+        return res.redirect(`${stuID_PORT}` + 'invalid');
+    }
+    if (name.length &lt; min_words || name.length > max_words) {
+        return res.redirect(`${stuID_PORT}` + 'invalid');
+    }
+    if (!/^[a-zA-Z0-9]+$/.test(license)) {
+        return res.redirect(`${stuID_PORT}` + 'invalid');
+    }
+    if (license.length > 5) {
+        return res.redirect(`${stuID_PORT}` + 'invalid')
+    }
+
+    let driver = new Driver(name, department, license, isActive);
+    driverDB.push(driver);
+    res.redirect(`${stuID_PORT}` + 'driver-list');
+});
+
+/**
+ * Route handler for the add-package page (GET METHOD)
+ * Renders the add-package.html file with active drivers
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.get(`${stuID_PORT}` + "add-package", function (req, res) {
+    const activeDrivers = driverDB.filter(driver => driver.driverIsActive);
+    res.render("add-package.html", {drivers: activeDrivers});
+});
+
+/**
+ * Route handler for adding a new package (POST METHOD)
+ * Validates input and adds a new package to the database
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.post(`${stuID_PORT}` + "add-package", function (req, res) {
+    let {title, weight, destination, description, isAllocated, driver} = req.body;
+    isAllocated = isAllocated === 'true';
+
+    weight = parseInt(weight);
+
+    if (!/^[a-zA-Z0-9 ]+$/.test(title)) {
+        return res.redirect(`${stuID_PORT}` + 'invalid');
+    }
+    if (title.length &lt; 3 || title.length > 15) {
+        return res.redirect(`${stuID_PORT}` + 'invalid');
+    }
+    if (isNaN(weight) || !Number.isInteger(weight) || weight &lt; 0) {
+        return res.redirect(`${stuID_PORT}` + 'invalid');
+    }
+    if (!/^[a-zA-Z0-9 ]+$/.test(destination)) {
+        return res.redirect(`${stuID_PORT}` + 'invalid');
+    }
+    if (destination.length &lt; 5 || destination.length > 15) {
+        return res.redirect(`${stuID_PORT}` + 'invalid');
+    }
+    if (typeof description !== 'string' || description.length &lt; 0 || description.length > 30) {
+        return res.redirect(`${stuID_PORT}` + 'invalid');
+    }
+
+    let newPackage = new Package(title, weight, destination, description, isAllocated, driver);
+    packageDB.push(newPackage);
+
+    res.redirect(`${stuID_PORT}` + 'package-list');
+});
+
+/**
+ * Deletes a driver from the database
+ * @param {string} id - The ID of the driver to delete
+ * @returns {boolean} True if the driver was deleted, false otherwise
+ */
+function deleteDriver(id) {
+    const index = driverDB.findIndex(driver => driver.driverId === id);
+    if (index !== -1) {
+        driverDB.splice(index, 1);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Route handler for deleting a driver
+ * Deletes a driver if an ID is provided, otherwise renders the delete-driver.html file
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.get(`${stuID_PORT}` + "delete-driver", function (req, res) {
+    const driverId = req.query.id;
+    
+    if (driverId) {
+        const deleted = deleteDriver(driverId);
+        if (deleted) {
+            res.redirect(`${stuID_PORT}` + 'driver-list');
+        } else {
+            res.redirect(`${stuID_PORT}` + 'invalid');
+        }
+    } else {
+        res.render("delete-driver.html");
+    }
+});
+
+/**
+ * Deletes a package from the database
+ * @param {string} id - The ID of the package to delete
+ * @returns {boolean} True if the package was deleted, false otherwise
+ */
+function deletePackage(id) {
+    const index = packageDB.findIndex(deletePackage => deletePackage.packageId === id);
+    if (index !== -1) {
+        packageDB.splice(index, 1);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Route handler for deleting a package
+ * Deletes a package if an ID is provided, otherwise renders the delete-package.html file
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.get(`${stuID_PORT}` + "delete-package", function (req, res) {
+    const packageId = req.query.id;
+    
+    if (packageId) {
+        const deleted = deletePackage(packageId);
+        if (deleted) {
+            res.redirect(`${stuID_PORT}` + 'package-list');
+        } else {
+            res.redirect(`${stuID_PORT}` + 'invalid');
+        }
+    } else {
+        res.render("delete-package.html");
+    }
+});
+
+/**
+ * Route handler for listing drivers by department
+ * Renders the driver-dep-list.html file with drivers filtered by department
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.get(`${stuID_PORT}` + "driver-dep-list", function (req, res) {
+    const selectedDepartment = req.query.department;
+
+    const driversByDepartment = {
+        Food: driverDB.filter(driver => driver.driverDepartment === "Food"),
+        Furniture: driverDB.filter(driver => driver.driverDepartment === "Furniture"),
+        Electronic: driverDB.filter(driver => driver.driverDepartment === "Electronic")
+    }
+
+    res.render("driver-dep-list.html", {driversByDepartment, selectedDepartment});
+});
+
+/**
+ * Route handler for listing all drivers
+ * Renders the driver-list.html file with all drivers
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.get(`${stuID_PORT}` + "driver-list", function (req, res) {
+    res.render("driver-list.html", {drivers: driverDB});
+});
+
+/**
+ * Route handler for listing all packages
+ * Renders the package-list.html file with all packages
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.get(`${stuID_PORT}` + "package-list", function (req, res) {
+    res.render("package-list.html", {packages: packageDB});
+});
+
+/**
+ * Route handler for invalid inputs
+ * Renders the invalid.html file
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.get(`${stuID_PORT}` + "invalid", function (req, res) {
+    res.render("invalid.html");
+});
+
+/**
+ * Route handler for 404 errors (invalid routes or routes that don't exist)
+ * Renders the 404.html file
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+app.get("*", function (req, res) {
+    res.render("404.html");
+});
+
+/**
+ * Starts the Express server
+ * Listens on the specified port number and logs a message to the console
+ */
+app.listen(PORT_NUMBER, function () {
+    print(`listening on port ${PORT_NUMBER}`);
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#PORT_NUMBER">PORT_NUMBER</a></li><li><a href="global.html#deleteDriver">deleteDriver</a></li><li><a href="global.html#deletePackage">deletePackage</a></li><li><a href="global.html#driverDB">driverDB</a></li><li><a href="global.html#express">express</a></li><li><a href="global.html#packageDB">packageDB</a></li><li><a href="global.html#print">print</a></li><li><a href="global.html#stuID_PORT">stuID_PORT</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Fri Aug 23 2024 23:30:07 GMT+1000 (Australian Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+<head>
+    <title>DataNest</title>
+    <link href="/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+
+    <%- include('header.html') %>
+
+    <main class="container py-5">
+        <div class="jumbotron">
+            <div class="container justify-content-center">
+                <h1>Welcome to DataNest!</h1><br>
+                <p>
+                    Here you will be able to make use of the many functionalities provided by the website to store a current record of your company's package services, including any active drivers, packages that need to be delivered, current department of drivers, and assigning drivers to packages that need to be delivered.
+                    <br><br>Start keeping track of your deliveries today!
+
+                    <br><br>Current Number of Drivers: <%= driverCount %>
+                    <br>Current Number of Packages: <%= packageCount %>
+
+                </p><br>
+                <p><a class="btn btn-primary btn-lg" href="/33310440/Shubh/info" role="button">Learn more</a></p>
+            </div>
+        </div>
+    </main>
+
+    <%- include('footer.html') %>
+
+</body>
+</html>
